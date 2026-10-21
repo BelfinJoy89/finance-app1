@@ -3,6 +3,7 @@ import Header from '../components/layout/Header';
 import MetricCard from '../components/cards/MetricCard';
 import TrendChartCard from '../components/cards/TrendChartCard';
 import BarComparisonCard from '../components/cards/BarComparisonCard';
+import CustomCompanyExplorer from '../components/cards/CustomCompanyExplorer';
 import TimeRangeSelector from '../components/common/TimeRangeSelector';
 import CompanyTable from '../components/common/CompanyTable';
 import { TIME_RANGES, TRACKED_COMPANIES } from '../services/mockData';
@@ -150,6 +151,11 @@ export default function Dashboard() {
               />
             )}
           </div>
+        </section>
+
+        {/* User-Selected Company Graph & Explorer */}
+        <section className="custom-explorer-section">
+          <CustomCompanyExplorer activeTimeRange={timeRange} />
         </section>
 
         {/* Detailed Table */}
