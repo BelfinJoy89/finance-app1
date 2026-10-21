@@ -1,0 +1,628 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Finance Dashboard — Implementation Plan</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.65;
+    background: #ffffff;
+    color: #1f2328;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+  }
+
+  /* ── Header ── */
+  .report-header {
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 24px;
+    margin-bottom: 36px;
+  }
+  .report-header .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #57606a;
+    margin-bottom: 8px;
+  }
+  .report-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2328;
+    line-height: 1.3;
+  }
+  .report-header .subtitle {
+    margin-top: 6px;
+    color: #57606a;
+    font-size: 14px;
+  }
+  .meta-row {
+    display: flex;
+    gap: 24px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .meta-item {
+    font-size: 12px;
+    color: #57606a;
+  }
+  .meta-item strong {
+    color: #1f2328;
+    font-weight: 600;
+  }
+
+  /* ── Section ── */
+  section { margin-bottom: 40px; }
+
+  h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2328;
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  h2 .sec-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #3b82d4;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1f2328;
+    margin: 16px 0 8px;
+  }
+
+  p { margin-bottom: 10px; color: #1f2328; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── Code / pre ── */
+  pre {
+    background: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-size: 12px;
+    line-height: 1.55;
+    overflow-x: auto;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    color: #1f2328;
+    margin: 10px 0 14px;
+  }
+  code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 12px;
+    background: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: #1f2328;
+  }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 10px 0 14px;
+  }
+  th {
+    background: #f7f8fa;
+    color: #57606a;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    text-align: left;
+    padding: 7px 10px;
+    border: 1px solid #e5e7eb;
+  }
+  td {
+    padding: 7px 10px;
+    border: 1px solid #e5e7eb;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: #fafbfc; }
+
+  /* ── Cards ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 12px;
+    margin: 12px 0;
+  }
+  .card {
+    background: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .card .card-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #3b82d4;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .card p { font-size: 12px; color: #57606a; margin: 0; line-height: 1.5; }
+
+  /* ── Flow diagram (SVG) ── */
+  .flow-wrap {
+    background: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+
+  /* ── Layer badges ── */
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 3px;
+    margin-right: 4px;
+  }
+  .badge-blue  { background: #dbeafe; color: #1d4ed8; }
+  .badge-green { background: #dcfce7; color: #15803d; }
+  .badge-amber { background: #fef9c3; color: #a16207; }
+  .badge-purple{ background: #f3e8ff; color: #7e22ce; }
+
+  /* ── Checklist ── */
+  ul.checklist { list-style: none; padding: 0; }
+  ul.checklist li {
+    padding: 4px 0 4px 22px;
+    position: relative;
+    font-size: 13px;
+    color: #1f2328;
+  }
+  ul.checklist li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #3b82d4;
+    font-weight: 700;
+  }
+
+  /* ── Bullet list ── */
+  ul.plain { padding-left: 18px; }
+  ul.plain li { margin-bottom: 5px; font-size: 13px; }
+
+  /* ── Inline note ── */
+  .note {
+    background: #fffbeb;
+    border-left: 3px solid #f59e0b;
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    font-size: 12px;
+    color: #57606a;
+    margin: 10px 0;
+  }
+
+  /* ── Footer ── */
+  .report-footer {
+    margin-top: 56px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    font-size: 12px;
+    color: #57606a;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  
+  <header class="report-header">
+    <div class="eyebrow">IBM Bob · GitHub SDLC Lab</div>
+    <h1>Finance Market Dashboard<br />Implementation Plan</h1>
+    <p class="subtitle">React application tracking IBM and four competitors across three time-window views using Yahoo Finance data.</p>
+    <div class="meta-row">
+      <div class="meta-item"><strong>Lab Part</strong> 1 — Build</div>
+      <div class="meta-item"><strong>Stack</strong> React · Vite · Recharts · Vitest</div>
+      <div class="meta-item"><strong>Companies</strong> IBM · MSFT · ORCL · SAP · CRM</div>
+      <div class="meta-item"><strong>Time Windows</strong> Today · 7 Days · Quarter</div>
+    </div>
+  </header>
+
+  
+  <section>
+    <h2><span class="sec-num">1</span> Source Folder Architecture</h2>
+    <p>The React application lives at the repository root to satisfy the existing <code>finance-app-ci.yml</code> CI workflow which expects <code>npm install</code>, <code>npm run lint</code>, <code>npm test</code>, and <code>npm run build</code> at the root level.</p>
+    <pre>finance-app/                    ← Vite + React project root
+├── public/
+├── src/
+│   ├── main.jsx                    ← React entry point
+│   ├── App.jsx                     ← Router shell, global layout
+│   │
+│   ├── components/
+│   │   ├── layout/
+│   │   │   ├── Header.jsx          ← App title, nav tabs
+│   │   │   └── ErrorBoundary.jsx   ← Top-level React error boundary
+│   │   │
+│   │   ├── dashboard/
+│   │   │   ├── DashboardPage.jsx   ← Orchestrates time-window tabs
+│   │   │   ├── TimeWindowTabs.jsx  ← today / 7d / quarter switcher
+│   │   │   ├── SummaryCardGrid.jsx ← Row of QuoteSummaryCard
+│   │   │   ├── QuoteSummaryCard.jsx← Price, change, % for one ticker
+│   │   │   ├── TrendChartPanel.jsx ← Multi-series line chart wrapper
+│   │   │   └── CustomTickerPanel.jsx← Part-2 user-selected company
+│   │   │
+│   │   └── shared/
+│   │       ├── LoadingSpinner.jsx
+│   │       ├── ErrorMessage.jsx
+│   │       └── PriceChart.jsx      ← Pure Recharts line/area component
+│   │
+│   ├── services/
+│   │   ├── financeService.js       ← Public contract: fetchQuotes(), fetchHistory()
+│   │   ├── yahooFinanceAdapter.js  ← yahoo-finance2 calls + normalisation
+│   │   └── mockData.js             ← Fixture data for tests &amp; offline use
+│   │
+│   ├── hooks/
+│   │   ├── useMarketData.js        ← Fetches all tickers for a time window
+│   │   └── useCustomTicker.js      ← Part-2: single user-requested symbol
+│   │
+│   ├── constants/
+│   │   └── tickers.js              ← TRACKED_COMPANIES = [{symbol, name}]
+│   │
+│   └── utils/
+│       ├── dateUtils.js            ← getDateRange(window) → {from, to}
+│       └── dataTransforms.js       ← normaliseQuote(), normaliseHistory()
+│
+├── src/__tests__/
+│   ├── dataTransforms.test.js
+│   ├── financeService.test.js
+│   └── DashboardPage.test.jsx
+│
+├── .github/                        ← Already present in repo
+├── package.json
+├── vite.config.js
+└── .env.example                    ← Documents env vars, never actual secrets</pre>
+    <div class="note">
+      <strong>Key principle:</strong> Services are isolated behind a contract interface so the data source can be swapped (yahoo-finance2 → proxy → mock) without touching any component. Hooks are the only layer that call services — components are always data-in / events-out.
+    </div>
+  </section>
+
+  
+  <section>
+    <h2><span class="sec-num">2</span> React Component Boundaries</h2>
+
+    <div class="flow-wrap">
+      <svg width="100%" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Segoe UI', system-ui, sans-serif" font-size="11">
+        
+        <rect x="290" y="10" width="120" height="30" rx="5" fill="#3b82d4"></rect>
+        <text x="350" y="30" text-anchor="middle" fill="#fff" font-weight="600">App</text>
+
+        
+        <line x1="350" y1="40" x2="350" y2="65" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#arr)"></line>
+
+        
+        <rect x="245" y="65" width="210" height="30" rx="5" fill="#1d4ed8"></rect>
+        <text x="350" y="85" text-anchor="middle" fill="#fff" font-weight="600">DashboardPage</text>
+
+        
+        <line x1="270" y1="95" x2="100" y2="145" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#arr)"></line>
+        <line x1="310" y1="95" x2="250" y2="145" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#arr)"></line>
+        <line x1="390" y1="95" x2="450" y2="145" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#arr)"></line>
+        <line x1="430" y1="95" x2="600" y2="145" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#arr)"></line>
+
+        
+        <rect x="30" y="145" width="140" height="30" rx="5" fill="#f7f8fa" stroke="#e5e7eb"></rect>
+        <text x="100" y="165" text-anchor="middle" fill="#1f2328">TimeWindowTabs</text>
+
+        
+        <rect x="185" y="145" width="130" height="30" rx="5" fill="#f7f8fa" stroke="#e5e7eb"></rect>
+        <text x="250" y="165" text-anchor="middle" fill="#1f2328">SummaryCardGrid</text>
+
+        
+        <rect x="385" y="145" width="130" height="30" rx="5" fill="#f7f8fa" stroke="#e5e7eb"></rect>
+        <text x="450" y="165" text-anchor="middle" fill="#1f2328">TrendChartPanel</text>
+
+        
+        <rect x="530" y="145" width="140" height="30" rx="5" fill="#f3e8ff" stroke="#d8b4fe"></rect>
+        <text x="600" y="160" text-anchor="middle" fill="#7e22ce">CustomTicker</text>
+        <text x="600" y="172" text-anchor="middle" fill="#7e22ce">Panel</text>
+
+        
+        <line x1="250" y1="175" x2="220" y2="225" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#arr)"></line>
+        <line x1="450" y1="175" x2="390" y2="225" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#arr)"></line>
+        <line x1="600" y1="175" x2="530" y2="225" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#arr)"></line>
+        <line x1="600" y1="175" x2="620" y2="225" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#arr)"></line>
+
+        
+        <rect x="155" y="225" width="130" height="30" rx="5" fill="#f7f8fa" stroke="#e5e7eb"></rect>
+        <text x="220" y="245" text-anchor="middle" fill="#1f2328">QuoteSummaryCard</text>
+
+        
+        <rect x="320" y="225" width="120" height="30" rx="5" fill="#dcfce7" stroke="#86efac"></rect>
+        <text x="380" y="245" text-anchor="middle" fill="#15803d">PriceChart</text>
+
+        
+        <rect x="460" y="225" width="120" height="30" rx="5" fill="#f7f8fa" stroke="#e5e7eb"></rect>
+        <text x="520" y="245" text-anchor="middle" fill="#57606a">LoadingSpinner</text>
+
+        
+        <rect x="595" y="225" width="105" height="30" rx="5" fill="#f7f8fa" stroke="#e5e7eb"></rect>
+        <text x="648" y="245" text-anchor="middle" fill="#57606a">ErrorMessage</text>
+
+        
+        <rect x="30" y="272" width="12" height="12" rx="2" fill="#1d4ed8"></rect>
+        <text x="47" y="282" fill="#57606a" font-size="10">Orchestrator</text>
+        <rect x="150" y="272" width="12" height="12" rx="2" fill="#f7f8fa" stroke="#e5e7eb"></rect>
+        <text x="167" y="282" fill="#57606a" font-size="10">Presentational</text>
+        <rect x="290" y="272" width="12" height="12" rx="2" fill="#dcfce7" stroke="#86efac"></rect>
+        <text x="307" y="282" fill="#57606a" font-size="10">Shared / Reusable</text>
+        <rect x="450" y="272" width="12" height="12" rx="2" fill="#f3e8ff" stroke="#d8b4fe"></rect>
+        <text x="467" y="282" fill="#57606a" font-size="10">Part 2 extension</text>
+
+        <defs>
+          <marker id="arr">
+            <path d="M0,0 L0,6 L6,3 z" fill="#d1d5db"></path>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <table>
+      <thead><tr><th>Component</th><th>Responsibility</th><th>Own state?</th></tr></thead>
+      <tbody>
+        <tr><td><code>DashboardPage</code></td><td>Calls <code>useMarketData(window)</code>, distributes results downward</td><td>Selected window only</td></tr>
+        <tr><td><code>TimeWindowTabs</code></td><td>Controlled tab switcher, emits <code>onWindowChange</code></td><td>No</td></tr>
+        <tr><td><code>QuoteSummaryCard</code></td><td>Renders a single normalised quote object</td><td>No</td></tr>
+        <tr><td><code>PriceChart</code></td><td>Thin Recharts wrapper, accepts <code>series[]</code> and <code>labels[]</code></td><td>No</td></tr>
+        <tr><td><code>CustomTickerPanel</code></td><td>Self-contained, owns <code>useCustomTicker()</code> with its own loading/error</td><td>Yes (Part 2)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  
+  <section>
+    <h2><span class="sec-num">3</span> Data Service Abstraction</h2>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">financeService.js</div>
+        <p>Public contract. Components and hooks only import from here. Exposes <code>fetchQuotes(symbols)</code> and <code>fetchHistory(symbols, window)</code>.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">yahooFinanceAdapter.js</div>
+        <p>Implements the contract using <code>yahoo-finance2</code>. Maps raw Yahoo responses to a normalised shape: <code>{ symbol, price, change, pct, history[] }</code>.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">mockData.js</div>
+        <p>Static fixtures matching the normalised shape. Used by tests and triggered via <code>VITE_USE_MOCK_DATA=true</code> for offline demos.</p>
+      </div>
+    </div>
+
+    <h3>Yahoo Finance practical note</h3>
+    <p><code>yahoo-finance2</code> works server-side (Node). For the browser, add a lightweight Express proxy under <code>server/proxy.js</code> and configure Vite's <code>proxy</code> option to forward <code>/api/finance</code> requests. This avoids CORS and keeps the browser bundle clean.</p>
+
+    <pre>// financeService.js — public contract
+export async function fetchQuotes(symbols)           // current-day snapshot
+export async function fetchHistory(symbols, window)  // 7d or quarter OHLCV
+
+// yahooFinanceAdapter.js — implementation detail
+import yahooFinance from 'yahoo-finance2';
+// normalises → { symbol, price, change, pct, history[] }</pre>
+  </section>
+
+  
+  <section>
+    <h2><span class="sec-num">4</span> Charting Approach</h2>
+
+    <p><span class="badge badge-green">Recommended</span> <strong>Recharts v2</strong> — ships as a React-native component set, tree-shakeable, well-maintained, and straightforward to mock in Vitest/JSDOM (no canvas dependency).</p>
+
+    <table>
+      <thead><tr><th>View</th><th>Chart type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Current day</td><td><code>&lt;BarChart&gt;</code> + summary cards</td><td>No intraday history in free Yahoo tier — cards are more reliable for single-day data</td></tr>
+        <tr><td>Last 7 days</td><td><code>&lt;LineChart&gt;</code> multi-series</td><td>One line per company, 7 data points, shared <code>&lt;Legend&gt;</code></td></tr>
+        <tr><td>Last quarter</td><td><code>&lt;AreaChart&gt;</code> multi-series</td><td>~63 trading-day points, transparent fill to avoid overlap clutter</td></tr>
+      </tbody>
+    </table>
+
+    <p>All three views consume the same <code>PriceChart</code> component — the chart type is passed as a prop, keeping the dashboard panels uniform and the bundle small.</p>
+  </section>
+
+  
+  <section>
+    <h2><span class="sec-num">5</span> State Management Strategy</h2>
+
+    <p>No global state library is needed for V1. The data model is shallow and co-located:</p>
+
+    <table>
+      <thead><tr><th>Hook</th><th>State shape</th><th>Scope</th></tr></thead>
+      <tbody>
+        <tr><td><code>useMarketData(window)</code></td><td><code>{ loading, error, quotes, history }</code></td><td><code>DashboardPage</code> — all tracked companies</td></tr>
+        <tr><td><code>useCustomTicker(symbol)</code></td><td><code>{ loading, error, data }</code></td><td><code>CustomTickerPanel</code> — single user symbol</td></tr>
+        <tr><td>Selected time window</td><td><code>useState('today')</code></td><td><code>DashboardPage</code></td></tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>Upgrade path:</strong> Introduce <code>@tanstack/react-query</code> if caching between window switches becomes important, proxy calls are slow and need background refresh, or the Part-2 ticker lookup needs debouncing and request deduplication.
+    </div>
+  </section>
+
+  
+  <section>
+    <h2><span class="sec-num">6</span> Error Handling</h2>
+
+    <table>
+      <thead><tr><th>Layer</th><th>Mechanism</th><th>What it catches</th></tr></thead>
+      <tbody>
+        <tr><td>Component boundary</td><td><code>&lt;ErrorBoundary&gt;</code> wraps <code>&lt;DashboardPage&gt;</code></td><td>Unexpected render exceptions</td></tr>
+        <tr><td>Hook level</td><td><code>try/catch</code> in <code>useEffect</code>, sets <code>error</code> state</td><td>Network failures, Yahoo 429 rate limits, malformed JSON</td></tr>
+        <tr><td>Service level</td><td>Adapter throws typed errors: <code>DataUnavailableError</code>, <code>SymbolNotFoundError</code></td><td>Allows hook to distinguish and display the right message</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>Security rule:</strong> User-facing messages must never expose stack traces or internal API details. Show <em>"Data unavailable for IBM — please try again."</em> not the raw error string.
+    </div>
+  </section>
+
+  
+  <section>
+    <h2><span class="sec-num">7</span> Test Strategy</h2>
+
+    <p><span class="badge badge-blue">Framework</span> Vitest + React Testing Library — compatible with Vite, fastest local feedback loop.</p>
+
+    <table>
+      <thead><tr><th>Type</th><th>Target file</th><th>What to assert</th></tr></thead>
+      <tbody>
+        <tr><td>Unit</td><td><code>dataTransforms.js</code></td><td><code>normaliseQuote()</code> and <code>normaliseHistory()</code> produce correct shape from raw Yahoo fixtures</td></tr>
+        <tr><td>Unit</td><td><code>financeService.js</code></td><td>Mock adapter returns normalised data; error path throws <code>DataUnavailableError</code></td></tr>
+        <tr><td>Unit</td><td><code>dateUtils.js</code></td><td><code>getDateRange('7d')</code> and <code>getDateRange('quarter')</code> return correct ISO date bounds</td></tr>
+        <tr><td>Component</td><td><code>QuoteSummaryCard.jsx</code></td><td>Renders price, change, and percentage from props</td></tr>
+        <tr><td>Component</td><td><code>DashboardPage.jsx</code></td><td>Renders spinner while loading; renders cards on success; renders error on failure (mock <code>useMarketData</code>)</td></tr>
+        <tr><td>Component</td><td><code>CustomTickerPanel.jsx</code></td><td>Shows error on empty input; shows loading on valid submit</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Mock strategy:</strong> <code>vi.mock('../services/financeService')</code> at the test level — the real Yahoo adapter is never called in CI.</p>
+  </section>
+
+  
+  <section>
+    <h2><span class="sec-num">8</span> Local Validation Steps</h2>
+
+    <p>These match exactly what <code>.github/workflows/finance-app-ci.yml</code> runs in CI, so local and remote gates are identical.</p>
+
+    <pre>npm install          # 1. Install dependencies
+
+npm run lint         # 2. Catch style and security issues early
+
+npm test             # 3. All unit + component tests (Vitest)
+
+npm run build        # 4. Production build — confirms no bundler errors
+
+npm run dev          # 5. Dev server — manual visual check only</pre>
+
+    <p>Add a single convenience script to <code>package.json</code>:</p>
+    <pre>"scripts": {
+  "validate": "npm run lint &amp;&amp; npm test &amp;&amp; npm run build"
+}</pre>
+    <p>Bob runs <code>npm run validate</code> as the single gate before every commit.</p>
+  </section>
+
+  
+  <section>
+    <h2><span class="sec-num">9</span> GitHub-Driven Feature Evolution</h2>
+
+    <h3>Branch naming convention</h3>
+    <pre>feature/initial-finance-dashboard       ← Part 1 delivery
+feature/user-selected-company-chart     ← Part 2 enhancement (from issue)
+fix/chart-data-normalisation            ← Targeted bugfix
+bob/auto-implement-issue-42             ← Bob-initiated branch</pre>
+
+    <h3>One-file extension points</h3>
+    <p>Every extension path is a minimal, reviewable diff:</p>
+    <ul class="plain">
+      <li><strong>Add a company:</strong> edit only <code>src/constants/tickers.js</code> — no component changes.</li>
+      <li><strong>Swap the data source:</strong> implement a new adapter in <code>src/services/</code>, change one import in <code>financeService.js</code>.</li>
+      <li><strong>Add a time window:</strong> add an entry to <code>TimeWindowTabs</code> props and a <code>getDateRange()</code> case.</li>
+      <li><strong>Add a chart type:</strong> add a new <code>PriceChart</code> variant; no dashboard logic changes.</li>
+    </ul>
+
+    <h3>End-to-end GitHub delivery flow</h3>
+    <div class="flow-wrap">
+      <svg width="100%" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Segoe UI', system-ui, sans-serif" font-size="10.5">
+        
+        <rect x="0" y="20" width="88" height="36" rx="5" fill="#f7f8fa" stroke="#e5e7eb"></rect>
+        <text x="44" y="36" text-anchor="middle" fill="#1f2328" font-weight="600">GitHub Issue</text>
+        <text x="44" y="49" text-anchor="middle" fill="#57606a">or PR request</text>
+
+        <rect x="106" y="20" width="88" height="36" rx="5" fill="#dbeafe" stroke="#93c5fd"></rect>
+        <text x="150" y="36" text-anchor="middle" fill="#1d4ed8" font-weight="600">Bob fetches</text>
+        <text x="150" y="49" text-anchor="middle" fill="#1d4ed8">&amp; plans</text>
+
+        <rect x="212" y="20" width="88" height="36" rx="5" fill="#dbeafe" stroke="#93c5fd"></rect>
+        <text x="256" y="36" text-anchor="middle" fill="#1d4ed8" font-weight="600">Implement</text>
+        <text x="256" y="49" text-anchor="middle" fill="#1d4ed8">feature branch</text>
+
+        <rect x="318" y="20" width="88" height="36" rx="5" fill="#dbeafe" stroke="#93c5fd"></rect>
+        <text x="362" y="36" text-anchor="middle" fill="#1d4ed8" font-weight="600">npm run</text>
+        <text x="362" y="49" text-anchor="middle" fill="#1d4ed8">validate</text>
+
+        <rect x="424" y="20" width="88" height="36" rx="5" fill="#dbeafe" stroke="#93c5fd"></rect>
+        <text x="468" y="36" text-anchor="middle" fill="#1d4ed8" font-weight="600">Push branch</text>
+        <text x="468" y="49" text-anchor="middle" fill="#1d4ed8">+ PR notes</text>
+
+        <rect x="530" y="20" width="88" height="36" rx="5" fill="#dcfce7" stroke="#86efac"></rect>
+        <text x="574" y="36" text-anchor="middle" fill="#15803d" font-weight="600">CI validates</text>
+        <text x="574" y="49" text-anchor="middle" fill="#15803d">+ Human merge</text>
+
+        
+        <line x1="88" y1="38" x2="106" y2="38" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#a2)"></line>
+        <line x1="194" y1="38" x2="212" y2="38" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#a2)"></line>
+        <line x1="300" y1="38" x2="318" y2="38" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#a2)"></line>
+        <line x1="406" y1="38" x2="424" y2="38" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#a2)"></line>
+        <line x1="512" y1="38" x2="530" y2="38" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#a2)"></line>
+
+        <defs>
+          <marker id="a2">
+            <path d="M0,0 L0,6 L6,3 z" fill="#d1d5db"></path>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <h3>Suggested issue labels</h3>
+    <table>
+      <thead><tr><th>Label</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>enhancement</code></td><td>New dashboard feature</td></tr>
+        <tr><td><code>data-integration</code></td><td>Yahoo Finance layer change</td></tr>
+        <tr><td><code>test</code></td><td>Test coverage gap</td></tr>
+        <tr><td><code>bob-candidate</code></td><td>Issue ready for Bob to implement autonomously</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Issue → PR traceability checklist</h3>
+    <ul class="checklist">
+      <li>Every PR references the originating GitHub issue number</li>
+      <li>PR description uses the existing <code>PULL_REQUEST_TEMPLATE.md</code></li>
+      <li>Bob Collaboration Notes section is always filled in</li>
+      <li>Validation commands are listed and confirmed passing</li>
+      <li>Acceptance criteria from the issue are mapped to the implementation</li>
+    </ul>
+  </section>
+
+  
+  <footer class="report-footer">
+    Made with IBM Bob
+  </footer>
+
+</div>
+</body>
+</html>
