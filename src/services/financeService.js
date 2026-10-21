@@ -13,9 +13,9 @@ import { TRACKED_COMPANIES, MOCK_MARKET_DATA, TIME_RANGES } from './mockData';
 export function normalizeCompanyData(symbol, rawData) {
   const companyMeta = TRACKED_COMPANIES.find((c) => c.symbol === symbol) || {
     symbol,
-    name: symbol,
+    name: rawData?.name || symbol,
     primary: false,
-    color: '#888888'
+    color: rawData?.color || '#8a3ffc'
   };
 
   const currentPrice = rawData?.currentPrice ?? 0;
@@ -24,10 +24,10 @@ export function normalizeCompanyData(symbol, rawData) {
   const changePercent = previousClose ? +((change / previousClose) * 100).toFixed(2) : 0;
 
   return {
-    symbol: companyMeta.symbol,
-    name: companyMeta.name,
+    symbol: symbol.toUpperCase(),
+    name: rawData?.name || companyMeta.name || symbol.toUpperCase(),
     primary: companyMeta.primary,
-    color: companyMeta.color,
+    color: companyMeta.color || '#8a3ffc',
     currentPrice,
     previousClose,
     change,
@@ -49,11 +49,17 @@ export async function fetchCompanyData(symbol) {
   // Simulate network latency for realism
   await new Promise((resolve) => setTimeout(resolve, 150));
 
-  const data = MOCK_MARKET_DATA[symbol];
-  if (!data) {
-    throw new Error(`Data not found for symbol: ${symbol}`);
+  if (!symbol || typeof symbol !== 'string' || !symbol.trim()) {
+    throw new Error('Please enter a valid ticker symbol.');
   }
-  return normalizeCompanyData(symbol, data);
+
+  const normalizedSymbol = symbol.trim().toUpperCase();
+  const data = MOCK_MARKET_DATA[normalizedSymbol];
+  
+  if (!data) {
+    throw new Error(`No market data available for ticker symbol "${normalizedSymbol}".`);
+  }
+  return normalizeCompanyData(normalizedSymbol, data);
 }
 
 /**
@@ -116,6 +122,38 @@ export function buildComparisonChartData(companiesData, timeRange) {
       dataPoints.push(point);
     }
     return dataPoints;
+  }
+
+  return [];
+}
+
+/**
+ * Formats time-series data for a single company across specified time ranges
+ */
+export function formatSingleCompanySeries(companyData, timeRange) {
+  if (!companyData) return [];
+
+  if (timeRange === TIME_RANGES.DAY) {
+    return [
+      { label: 'Prev Close', price: companyData.previousClose },
+      { label: 'Day Low', price: companyData.dayLow },
+      { label: 'Current', price: companyData.currentPrice },
+      { label: 'Day High', price: companyData.dayHigh }
+    ];
+  }
+
+  if (timeRange === TIME_RANGES.WEEK) {
+    return (companyData.history7d || []).map((pt) => ({
+      label: pt.date,
+      price: pt.price
+    }));
+  }
+
+  if (timeRange === TIME_RANGES.QUARTER) {
+    return (companyData.quarterHistory || []).map((pt) => ({
+      label: pt.period,
+      price: pt.price
+    }));
   }
 
   return [];

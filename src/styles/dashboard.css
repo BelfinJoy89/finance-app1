@@ -316,6 +316,308 @@ body {
   color: var(--text-muted);
 }
 
+/* Custom Company Explorer */
+.explorer-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.explorer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.explorer-title-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.explorer-icon {
+  background: #edf5ff;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.explorer-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.explorer-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.explorer-search-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-input {
+  padding: 8px 12px 8px 34px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  width: 220px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  border-color: var(--ibm-blue);
+  box-shadow: 0 0 0 2px rgba(15, 98, 254, 0.15);
+}
+
+.search-btn {
+  padding: 8px 16px;
+  background-color: var(--ibm-blue);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  transition: background-color 0.2s;
+}
+
+.search-btn:hover {
+  background-color: var(--ibm-blue-hover);
+}
+
+.search-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Quick picks bar */
+.quick-picks-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.quick-picks-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.quick-picks-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.quick-pick-pill {
+  padding: 3px 10px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quick-pick-pill:hover {
+  border-color: var(--ibm-blue);
+  color: var(--ibm-blue);
+}
+
+.quick-pick-pill.active {
+  background-color: #edf5ff;
+  border-color: var(--ibm-blue);
+  color: var(--ibm-blue);
+}
+
+/* Explorer Content & States */
+.explorer-state-box {
+  padding: 32px 16px;
+  text-align: center;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.loading-box {
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.error-box {
+  background-color: var(--negative-bg);
+  border: 1px solid var(--negative);
+  color: var(--negative);
+  flex-direction: row;
+  text-align: left;
+  gap: 14px;
+  padding: 16px 20px;
+}
+
+.error-text-content strong {
+  display: block;
+  font-size: 13px;
+}
+
+.error-text-content p {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.empty-box {
+  background-color: var(--bg-primary);
+  border: 1px dashed var(--border-color);
+}
+
+.empty-state-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  max-width: 480px;
+}
+
+/* Company Summary Strip */
+.company-summary-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px;
+  background-color: var(--bg-primary);
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.company-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.company-badge {
+  background-color: var(--text-primary);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.company-full-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.market-cap-tag {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.company-spot-metrics {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.spot-label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.spot-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.spot-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Single Company Trend Card */
+.single-trend-card {
+  width: 100%;
+}
+
+.single-trend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.single-trend-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.single-trend-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.single-trend-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
 /* Table Section */
 .table-card {
   background-color: var(--bg-surface);
@@ -413,6 +715,22 @@ body {
 
 .negative-text {
   color: var(--negative);
+}
+
+.text-blue {
+  color: var(--ibm-blue);
+}
+
+.text-negative {
+  color: var(--negative);
+}
+
+.text-xs {
+  font-size: 11px;
+}
+
+.text-sm {
+  font-size: 12px;
 }
 
 .font-mono {
